@@ -1,0 +1,529 @@
+  :root {
+            --primary: #1a73e8;
+            --secondary: #34a853;
+            --danger: #ea4335;
+            --warning: #fbbc05;
+            --info: #4285f4;
+            --light: #f8f9fa;
+            --dark: #202124;
+            --freshwater: #64b5f6;
+            --saltwater: #4fc3f7;
+            --common: #4caf50;
+            --uncommon: #ff9800;
+            --rare: #f44336;
+            --legendary: #9c27b0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #0a2463 0%, #1565c0 100%);
+            color: var(--light);
+            min-height: 100vh;
+            padding-bottom: 50px;
+        }
+
+        header {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="waves" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M0,20 Q10,0 20,20 Q30,40 40,20 Q50,0 60,20 Q70,40 80,20 Q90,0 100,20 L100,40 L0,40 Z" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100%" height="100%" fill="url(%23waves)"/></svg>');
+            background-size: cover;
+        }
+
+        h1 {
+            font-family: 'Seaweed Script', cursive;
+            font-size: 3.5rem;
+            margin-bottom: 10px;
+            color: white;
+            text-shadow: 0 0 15px var(--primary), 0 0 25px var(--primary), 0 0 35px var(--primary);
+            position: relative;
+            animation: glow 2s infinite alternate;
+        }
+
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 10px var(--primary), 0 0 20px var(--primary), 0 0 30px var(--primary);
+            }
+            to {
+                text-shadow: 0 0 15px var(--primary), 0 0 25px var(--info), 0 0 35px var(--secondary);
+            }
+        }
+
+        .search-container {
+            max-width: 600px;
+            margin: 20px auto;
+            position: relative;
+        }
+
+        #search {
+            width: 100%;
+            padding: 15px 20px;
+            border-radius: 50px;
+            border: none;
+            font-size: 1.2rem;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        #search:focus {
+            outline: none;
+            box-shadow: 0 4px 20px rgba(33, 150, 243, 0.5);
+            transform: scale(1.02);
+        }
+
+        .filters {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .filter-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 30px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .filter-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-3px);
+        }
+
+        .filter-btn.active {
+            background: var(--primary);
+            box-shadow: 0 0 15px var(--primary);
+        }
+
+        .fish-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            max-width: 1600px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .fish-card {
+            width: 300px;
+            height: 420px;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .fish-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.8s;
+            transform-style: preserve-3d;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            border-radius: 20px;
+        }
+
+        .fish-card:hover .fish-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .fish-card-front, .fish-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .fish-card-front {
+            background: linear-gradient(145deg, #1a237e, #283593);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .fish-image {
+            width: 200px;
+            height: 200px;
+            object-fit: contain;
+            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.5));
+            transition: all 0.5s ease;
+        }
+
+        .fish-card:hover .fish-image {
+            transform: scale(1.1) rotate(5deg);
+            filter: drop-shadow(0 0 20px rgba(33, 150, 243, 0.7));
+        }
+
+        .fish-name {
+            font-size: 1.8rem;
+            font-weight: bold;
+            text-align: center;
+            margin: 15px 0;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .fish-type {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+
+        .freshwater {
+            background: var(--freshwater);
+        }
+
+        .saltwater {
+            background: var(--saltwater);
+        }
+
+        .fish-rarity {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+
+        .common {
+            background: var(--common);
+        }
+
+        .uncommon {
+            background: var(--uncommon);
+        }
+
+        .rare {
+            background: var(--rare);
+        }
+
+        .legendary {
+            background: var(--legendary);
+        }
+
+        .fish-card-back {
+            background: linear-gradient(145deg, #0d47a1, #1565c0);
+            transform: rotateY(180deg);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .fish-details {
+            text-align: center;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .detail-icon {
+            font-size: 1.5rem;
+            margin-right: 10px;
+            width: 30px;
+            text-align: center;
+        }
+
+        .season-icons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 5px;
+        }
+
+        .season-icon {
+            font-size: 1.5rem;
+        }
+
+        .spring { color: #4caf50; }
+        .summer { color: #ff9800; }
+        .autumn { color: #f44336; }
+        .winter { color: #03a9f4; }
+
+        .water-type-icon {
+            font-size: 2rem;
+            margin: 10px 0;
+        }
+
+        .led-effect {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 20px;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .led-effect::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0) 100%);
+            transform: rotate(30deg);
+            animation: led 3s infinite linear;
+        }
+
+        @keyframes led {
+            0% {
+                left: -100%;
+            }
+            100% {
+                left: 100%;
+            }
+        }
+
+        .card-shine {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 50%);
+            pointer-events: none;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        @media (max-width: 768px) {
+            .fish-card {
+                width: 280px;
+                height: 400px;
+            }
+            
+            h1 {
+                font-size: 2.5rem;
+            }
+        }
+
+        /* Animações personalizadas */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .fish-card {
+            animation: float 6s infinite ease-in-out;
+        }
+
+        .fish-card:nth-child(2n) {
+            animation-delay: 0.5s;
+        }
+
+        .fish-card:nth-child(3n) {
+            animation-delay: 1s;
+        }
+
+        .fish-card:nth-child(4n) {
+            animation-delay: 1.5s;
+        }
+
+        /* Efeito de partículas */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.5;
+        }
+
+        /* Modal de detalhes */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: linear-gradient(145deg, #1a237e, #0d47a1);
+            width: 90%;
+            max-width: 800px;
+            border-radius: 20px;
+            padding: 30px;
+            position: relative;
+            box-shadow: 0 0 50px rgba(33, 150, 243, 0.5);
+            animation: modalAppear 0.5s ease;
+        }
+
+        @keyframes modalAppear {
+            from {
+                opacity: 0;
+                transform: scale(0.8) rotateX(30deg);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) rotateX(0);
+            }
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 1.5rem;
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .close-modal:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .modal-image {
+            flex: 1;
+            min-width: 300px;
+            text-align: center;
+        }
+
+        .modal-image img {
+            max-width: 100%;
+            max-height: 300px;
+            filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.5));
+        }
+
+        .modal-details {
+            flex: 2;
+            min-width: 300px;
+        }
+
+        .modal-title {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            text-align: center;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .detail-row {
+            display: flex;
+            margin: 15px 0;
+            align-items: center;
+        }
+
+        .detail-label {
+            width: 150px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+
+        .detail-value {
+            flex: 1;
+        }
+
+        /* Efeitos de LED para cards raros */
+        .fish-card[data-rarity="legendary"] .led-effect::after {
+            background: linear-gradient(45deg, rgba(255,255,255,0) 0%, rgba(156,39,176,0.5) 50%, rgba(255,255,255,0) 100%);
+        }
+
+        .fish-card[data-rarity="rare"] .led-effect::after {
+            background: linear-gradient(45deg, rgba(255,255,255,0) 0%, rgba(244,67,54,0.5) 50%, rgba(255,255,255,0) 100%);
+        }
+
+        /* Efeito de brilho para cards épicos */
+        .fish-card[data-rarity="legendary"] {
+            position: relative;
+        }
+
+        .fish-card[data-rarity="legendary"]::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            z-index: -1;
+            border-radius: 25px;
+            background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+            background-size: 400%;
+            filter: blur(20px);
+            animation: glowing 20s linear infinite;
+        }
+
+        @keyframes glowing {
+            0% { background-position: 0 0; }
+            50% { background-position: 400% 0; }
+            100% { background-position: 0 0; }
+        }

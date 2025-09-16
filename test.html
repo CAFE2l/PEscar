@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PescaCatalog - Catálogo de Peixes</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Seaweed+Script&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1a73e8;
+            --secondary: #34a853;
+            --danger: #ea4335;
+            --warning: #fbbc05;
+            --info: #4285f4;
+            --light: #f8f9fa;
+            --dark: #202124;
+            --freshwater: #64b5f6;
+            --saltwater: #4fc3f7;
+            --common: #4caf50;
+            --uncommon: #ff9800;
+            --rare: #f44336;
+            --legendary: #9c27b0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #0a2463 0%, #1565c0 100%);
+            color: var(--light);
+            min-height: 100vh;
+            padding-bottom: 50px;
+        }
+
+        header {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="waves" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M0,20 Q10,0 20,20 Q30,40 40,20 Q50,0 60,20 Q70,40 80,20 Q90,0 100,20 L100,40 L0,40 Z" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100%" height="100%" fill="url(%23waves)"/></svg>');
+            background-size: cover;
+        }
+
+        h1 {
+            font-family: 'Seaweed Script', cursive;
+            font-size: 3.5rem;
+            margin-bottom: 10px;
+            color: white;
+            text-shadow: 0 0 15px var(--primary), 0 0 25px var(--primary), 0 0 35px var(--primary);
+            position: relative;
+            animation: glow 2s infinite alternate;
+        }
+
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 10px var(--primary), 0 0 20px var(--primary), 0 0 30px var(--primary);
+            }
+            to {
+                text-shadow: 0 0 15px var(--primary), 0 0 25px var(--info), 0 0 35px var(--secondary);
+            }
+        }
+
+        .search-container {
+            max-width: 600px;
+            margin: 20px auto;
+            position: relative;
+        }
+
+        #search {
+            width: 100%;
+            padding: 15px 20px;
+            border-radius: 50px;
+            border: none;
+            font-size: 1.2rem;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        #search:focus {
+            outline: none;
+            box-shadow: 0 4px 20px rgba(33, 150, 243, 0.5);
+            transform: scale(1.02);
+        }
+
+        .filters {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .filter-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 30px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .filter-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-3px);
+        }
+
+        .filter-btn.active {
+            background: var(--primary);
+            box-shadow: 0 0 15px var(--primary);
+        }
+
+        .fish-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            max-width: 1600px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .fish-card {
+            width: 300px;
+            height: 420px;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .fish-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.8s;
+            transform-style: preserve-3d;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            border-radius: 20px;
+        }
+
+        .fish-card:hover .fish-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .fish-card-front, .fish-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .fish-card-front {
+            background: linear-gradient(145deg, #1a237e, #283593);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .fish-image {
+            width: 200px;
+            height: 200px;
+            object-fit: contain;
+            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.5));
+            transition: all 0.5s ease;
+        }
+
+        .fish-card:hover .fish-image {
+            transform: scale(1.1) rotate(5deg);
+            filter: drop-shadow(0 0 20px rgba(33, 150, 243, 0.7));
+        }
+
+        .fish-name {
+            font-size: 1.8rem;
+            font-weight: bold;
+            text-align: center;
+            margin: 15px 0;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .fish-type {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+
+        .freshwater {
+            background: var(--freshwater);
+        }
+
+        .saltwater {
+            background: var(--saltwater);
+        }
+
+        .fish-rarity {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+
+        .common {
+            background: var(--common);
+        }
+
+        .uncommon {
+            background: var(--uncommon);
+        }
+
+        .rare {
+            background: var(--rare);
+        }
+
+        .legendary {
+            background: var(--legendary);
+        }
+
+        .fish-card-back {
+            background: linear-gradient(145deg, #0d47a1, #1565c0);
+            transform: rotateY(180deg);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .fish-details {
+            text-align: center;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .detail-icon {
+            font-size: 1.5rem;
+            margin-right: 10px;
+            width: 30px;
+            text-align: center;
+        }
+
+        .season-icons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 5px;
+        }
+
+        .season-icon {
+            font-size: 1.5rem;
+        }
+
+        .spring { color: #4caf50; }
+        .summer { color: #ff9800; }
+        .autumn { color: #f44336; }
+        .winter { color: #03a9f4; }
+
+        .water-type-icon {
+            font-size: 2rem;
+            margin: 10px 0;
+        }
+
+        .led-effect {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 20px;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .led-effect::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0) 100%);
+            transform: rotate(30deg);
+            animation: led 3s infinite linear;
+        }
+
+        @keyframes led {
+            0% {
+                left: -100%;
+            }
+            100% {
+                left: 100%;
+            }
+        }
+
+        .card-shine {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 50%);
+            pointer-events: none;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        @media (max-width: 768px) {
+            .fish-card {
+                width: 280px;
+                height: 400px;
+            }
+            
+            h1 {
+                font-size: 2.5rem;
+            }
+        }
+
+        /* Animações personalizadas */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .fish-card {
+            animation: float 6s infinite ease-in-out;
+        }
+
+        .fish-card:nth-child(2n) {
+            animation-delay: 0.5s;
+        }
+
+        .fish-card:nth-child(3n) {
+            animation-delay: 1s;
+        }
+
+        .fish-card:nth-child(4n) {
+            animation-delay: 1.5s;
+        }
+
+        /* Efeito de partículas */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.5;
+        }
+
+        /* Modal de detalhes */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: linear-gradient(145deg, #1a237e, #0d47a1);
+            width: 90%;
+            max-width: 800px;
+            border-radius: 20px;
+            padding: 30px;
+            position: relative;
+            box-shadow: 0 0 50px rgba(33, 150, 243, 0.5);
+            animation: modalAppear 0.5s ease;
+        }
+
+        @keyframes modalAppear {
+            from {
+                opacity: 0;
+                transform: scale(0.8) rotateX(30deg);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) rotateX(0);
+            }
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 1.5rem;
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .close-modal:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .modal-image {
+            flex: 1;
+            min-width: 300px;
+            text-align: center;
+        }
+
+        .modal-image img {
+            max-width: 100%;
+            max-height: 300px;
+            filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.5));
+        }
+
+        .modal-details {
+            flex: 2;
+            min-width: 300px;
+        }
+
+        .modal-title {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            text-align: center;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .detail-row {
+            display: flex;
+            margin: 15px 0;
+            align-items: center;
+        }
+
+        .detail-label {
+            width: 150px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+
+        .detail-value {
+            flex: 1;
+        }
+
+        /* Efeitos de LED para cards raros */
+        .fish-card[data-rarity="legendary"] .led-effect::after {
+            background: linear-gradient(45deg, rgba(255,255,255,0) 0%, rgba(156,39,176,0.5) 50%, rgba(255,255,255,0) 100%);
+        }
+
+        .fish-card[data-rarity="rare"] .led-effect::after {
+            background: linear-gradient(45deg, rgba(255,255,255,0) 0%, rgba(244,67,54,0.5) 50%, rgba(255,255,255,0) 100%);
+        }
+
+        /* Efeito de brilho para cards épicos */
+        .fish-card[data-rarity="legendary"] {
+            position: relative;
+        }
+
+        .fish-card[data-rarity="legendary"]::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            z-index: -1;
+            border-radius: 25px;
+            background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+            background-size: 400%;
+            filter: blur(20px);
+            animation: glowing 20s linear infinite;
+        }
+
+        @keyframes glowing {
+            0% { background-position: 0 0; }
+            50% { background-position: 400% 0; }
+            100% { background-position: 0 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="particles" id="particles"></div>
+
+    <header>
+        <h1>PescaCatalog</h1>
+        <p>Catálogo completo de peixes para pescadores</p>
+    </header>
+
+    <div class="search-container">
+        <input type="text" id="search" placeholder="Pesquisar peixes...">
+    </div>
+
+    <div class="filters">
+        <button class="filter-btn active" data-filter="all">
+            <i class="fas fa-fish"></i> Todos
+        </button>
+        <button class="filter-btn" data-filter="freshwater">
+            <i class="fas fa-tint"></i> Água Doce
+        </button>
+        <button class="filter-btn" data-filter="saltwater">
+            <i class="fas fa-water"></i> Água Salgada
+        </button>
+        <button class="filter-btn" data-filter="common">
+            <i class="fas fa-star"></i> Comum
+        </button>
+        <button class="filter-btn" data-filter="uncommon">
+            <i class="fas fa-star-half-alt"></i> Incomum
+        </button>
+        <button class="filter-btn" data-filter="rare">
+            <i class="fas fa-star"></i> Raro
+        </button>
+        <button class="filter-btn" data-filter="legendary">
+            <i class="fas fa-crown"></i> Lendário
+        </button>
+    </div>
+
+    <div class="fish-container" id="fish-container">
+        <!-- Cards de peixes serão gerados via JavaScript -->
+    </div>
+
+    <div class="modal" id="fish-modal">
+        <div class="modal-content">
+            <div class="close-modal" id="close-modal">
+                <i class="fas fa-times"></i>
+            </div>
+            <div class="modal-body" id="modal-body">
+                <!-- Conteúdo do modal será preenchido via JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>PescaCatalog &copy; 2023 - Todos os direitos reservados</p>
+    </div>
+
+    <script>
+        // Dados dos peixes
+        const fishData = [
+            {
+                id: 1,
+                name: "Dourado",
+                scientificName: "Salminus brasiliensis",
+                image: "https://images.pexels.com/photos/5728614/pexels-photo-5728614.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+                type: "freshwater",
+                bait: "Peixes pequenos, iscas artificiais",
+                seasons: ["spring", "summer"],
+                rarity: "uncommon",
+                description: "O dourado é um peixe de água doce muito valorizado por pescadores esportivos. Conhecido como 'rei do rio', possui bela coloração dourada e é um lutador forte.",
+                size: "Até 1m",
+                weight: "Até 30kg"
+            },
+            {
+                id: 2,
+                name: "Atum Azul",
+                scientificName: "Thunnus thynnus",
+                image: "https://images.pexels.com/photos/2869496/pexels-photo-2869496.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+                type: "saltwater",
+                bait: "Sardinhas, lulas, iscas artificiais",
+                seasons: ["summer", "autumn"],
+                rarity: "rare",
+                description: "O atum azul é um dos peixes mais impressionantes dos oceanos. Conhecido por sua velocidade e tamanho, é altamente valorizado na culinária.",
+                size: "Até 4.5m",
+                weight: "Até 680kg"
+            },
+            {
+                id: 3,
+                name: "Truta Arco-Íris",
+                scientificName: "Oncorhynchus mykiss",
+                image: "https://images.pexels.com/photos/07495305/pexels-photo-07495305.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+                type: "freshwater",
+                bait: "Iscas artificiais, minhocas, moscas",
+                seasons: ["spring", "autumn"],
+                rarity: "common",
+                description: "A truta arco-íris é um peixe popular entre pescadores. Originária da América do Norte, foi introduzida em rios de água fria em todo o mundo.",
+                size: "Até 60cm",
+                weight: "Até 5kg"
+            },
+            {
+                id: 4,
+                name: "Peixe-Palhaço",
+                scientificName: "Amphiprioninae",
+                image: "https://images.pexels.com/photos/1125970/pexels-photo-1125970.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+                type: "saltwater",
+                bait: "Plâncton, pequenos crustáceos",
+                seasons: ["spring", "summer"],
+                rarity: "common",
+                description: "O peixe-palhaço é conhecido por suas cores vibrantes và relação simbiótica com anêmonas-do-mar. Popularizado pelo filme 'Procurando Nemo'.",
+                size: "Até 15cm",
+                weight: "Até 200g"
+            },
+            {
+                id: 5,
+                name: "Tubarão-Martelo",
+                scientificName: "Sphyrnidae",
+                image: "https://images.pexels.com/photos/7264787/pexels-photo-7264787.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+                type: "saltwater",
+                bait: "Peixes, lulas, polvos",
+                seasons: ["summer"],
+                rarity: "rare",
+                description: "O tubarão-martelo é facilmente reconhecido pela forma peculiar de sua cabeça. São caçadores eficientes e possuem excelente senso de detecção de presas.",
+                size: "Até 6m",
+                weight: "Até 450kg"
+            },
+            {
+                id: 6,
+                name: "Pirarucu",
+                scientificName: "Arapaima gigas",
+                image: "https://images.pexels.com/photos/9732293/pexels-photo-9732293.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+                type: "freshwater",
+                bait: "Peixes pequenos, iscas artificiais",
+                seasons: ["summer", "autumn"],
+                rarity: "uncommon",
+                description: "O pirarucu é um dos maiores peixes de água doce do mundo. Nativo da Amazônia, pode respirar ar atmosférico, adaptação útil em águas com baixo oxigênio.",
+                size: "Até 3m",
+                weight: "Até 200kg"
+            },
+            {
+                id: 7,
+                name: "Mero",
+                scientificName: "Epinephelus itajara",
+                image: "https://images.pexels.com/photos/6749494/pexels-photo-6749494.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+                type: "saltwater",
+                bait: "Polvos, peixes, lagostas",
+                seasons: ["summer"],
+                rarity: "rare",
+                description: "O mero é um dos maiores peixes de recife. Conhecido por sua boca grande e comportamento curioso, infelizmente está ameaçado de extinção em muitas áreas.",
+                size: "Até 2.5m",
+                weight: "Até 400kg"
+            },
+            {
+                id: 8,
+                name: "Aruanã",
+                scientificName: "Osteoglossum bicirrhosum",
+                image: "https://images.pexels.com/photos/9940529/pexels-photo-9940529.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+                type: "freshwater",
+                bait: "Insetos, pequenos peixes",
+                seasons: ["spring", "summer"],
+                rarity: "uncommon",
+                description: "A aruanã é um peixe elegante conhecido por saltar para capturar insetos. É considerado um símbolo de boa sorte em algumas culturas asiáticas.",
+                size: "Até 1.2m",
+                weight: "Até 6kg"
+            },
+            {
+                id: 9,
+                name: "Peixe-Lua",
+                scientificName: "Mola mola",
+                image: "https://images.pexels.com/photos/3251928/pexels-photo-3251928.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+                type: "saltwater",
+                bait: "Águas-vivas, zooplâncton",
+                seasons: ["summer", "autumn"],
+                rarity: "rare",
+                description: "O peixe-lua é o peixe ósseo mais pesado do mundo, podendo atingir mais de 2 toneladas. Tem formato circular único e é um nadador lento.",
+                size: "Até 3.3m",
+                weight: "Até 2.3t"
+            },
+            {
+                id: 10,
+                name: "Tucunaré",
+                scientificName: "Cichla spp.",
+                image: "https://images.pexels.com/photos/5728613/pexels-photo-5728613.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+                type: "freshwater",
+                bait: "Iscas artificiais, peixes pequenos",
+                seasons: ["spring", "summer", "autumn"],
+                rarity: "common",
+                description: "O tucunaré é um peixe esportivo muito popular no Brasil. Conhecido por sua agressividade ao atacar iscas, proporciona emocionantes pescarias.",
+                size: "Até 1m",
+                weight: "Até 10kg"
+            },
+            {
+                id: 11,
+                name: "Cavalo-Marinho",
+                scientificName: "Hippocampus",
+                image: "https://images.pexels.com/photos/6421896/pexels-photo-6421896.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+                type: "saltwater",
+                bait: "Pequenos crustáceos",
+                seasons: ["spring", "summer"],
+                rarity: "uncommon",
+                description: "O cavalo-marinho é um peixe único com cabeça similar a de cavalo e corpo segmentado. Os machos carregam os ovos fertilizados em uma bolsa especial.",
+                size: "Até 30cm",
+                weight: "Até 200g"
+            },
+            {
+                id: 12,
+                name: "Piraíba",
+                scientificName: "Brachyplatystoma filamentosum",
+                image: "https://images.pexels.com/photos/14583431/pexels-photo-14583431.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+                type: "freshwater",
+                bait: "Peixes grandes, iscas artificiais",
+                seasons: ["summer"],
+                rarity: "legendary",
+                description: "A piraíba é um dos maiores bagres de água doce do mundo, habitando as profundezas dos rios amazônicos. É uma captura lendária entre pescadores.",
+                size: "Até 3.6m",
+                weight: "Até 200kg"
+            }
+        ];
+
+        // Elementos DOM
+        const fishContainer = document.getElementById('fish-container');
+        const searchInput = document.getElementById('search');
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const modal = document.getElementById('fish-modal');
+        const closeModal = document.getElementById('close-modal');
+        const modalBody = document.getElementById('modal-body');
+
+        // Filtros ativos
+        let activeFilters = {
+            type: 'all',
+            rarity: 'all'
+        };
+
+        // Inicializar partículas
+        function initParticles() {
+            const particlesContainer = document.getElementById('particles');
+            for (let i = 0; i < 100; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.top = `${Math.random() * 100}%`;
+                particle.style.animationDuration = `${Math.random() * 10 + 5}s`;
+                particle.style.animationDelay = `${Math.random() * 5}s`;
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Renderizar cards de peixes
+        function renderFishCards(fishArray) {
+            fishContainer.innerHTML = '';
+            
+            fishArray.forEach(fish => {
+                const card = document.createElement('div');
+                card.classList.add('fish-card');
+                card.setAttribute('data-type', fish.type);
+                card.setAttribute('data-rarity', fish.rarity);
+                
+                card.innerHTML = `
+                    <div class="fish-card-inner">
+                        <div class="fish-card-front">
+                            <div class="led-effect"></div>
+                            <div class="card-shine"></div>
+                            <img src="${fish.image}" alt="${fish.name}" class="fish-image">
+                            <h3 class="fish-name">${fish.name}</h3>
+                            <div class="fish-type ${fish.type}">${fish.type === 'freshwater' ? 'Água Doce' : 'Água Salgada'}</div>
+                            <div class="fish-rarity ${fish.rarity}">${getRarityText(fish.rarity)}</div>
+                        </div>
+                        <div class="fish-card-back">
+                            <div class="fish-details">
+                                <h3 class="fish-name">${fish.name}</h3>
+                                <div class="detail-item">
+                                    <div class="detail-icon">
+                                        <i class="fas fa-water"></i>
+                                    </div>
+                                    <div>${fish.type === 'freshwater' ? 'Água Doce' : 'Água Salgada'}</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-icon">
+                                        <i class="fas fa-fish"></i>
+                                    </div>
+                                    <div>${fish.bait}</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-icon">
+                                        <i class="fas fa-calendar-alt"></i>
+                                    </div>
+                                    <div>
+                                        ${getSeasonsText(fish.seasons)}
+                                        <div class="season-icons">
+                                            ${fish.seasons.map(season => `<i class="fas fa-${getSeasonIcon(season)} season-icon ${season}"></i>`).join('')}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-icon">
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                    <div>${getRarityText(fish.rarity)}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                card.addEventListener('click', () => openFishModal(fish));
+                fishContainer.appendChild(card);
+            });
+        }
+
+        // Obter texto da raridade
+        function getRarityText(rarity) {
+            const rarityMap = {
+                'common': 'Comum',
+                'uncommon': 'Incomum',
+                'rare': 'Raro',
+                'legendary': 'Lendário'
+            };
+            return rarityMap[rarity];
+        }
+
+        // Obter texto das estações
+        function getSeasonsText(seasons) {
+            const seasonMap = {
+                'spring': 'Primavera',
+                'summer': 'Verão',
+                'autumn': 'Outono',
+                'winter': 'Inverno'
+            };
+            return seasons.map(season => seasonMap[season]).join(', ');
+        }
+
+        // Obter ícone da estação
+        function getSeasonIcon(season) {
+            const iconMap = {
+                'spring': 'leaf',
+                'summer': 'sun',
+                'autumn': 'tree',
+                'winter': 'snowflake'
+            };
+            return iconMap[season];
+        }
+
+        // Abrir modal com detalhes do peixe
+        function openFishModal(fish) {
+            modalBody.innerHTML = `
+                <h2 class="modal-title">${fish.name}</h2>
+                <div class="modal-body">
+                    <div class="modal-image">
+                        <img src="${fish.image}" alt="${fish.name}">
+                    </div>
+                    <div class="modal-details">
+                        <div class="detail-row">
+                            <div class="detail-label">
+                                <i class="fas fa-signature"></i> Nome Científico:
+                            </div>
+                            <div class="detail-value">${fish.scientificName}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">
+                                <i class="fas fa-water"></i> Tipo de Água:
+                            </div>
+                            <div class="detail-value">${fish.type === 'freshwater' ? 'Água Doce' : 'Água Salgada'}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">
+                                <i class="fas fa-fish"></i> Isca:
+                            </div>
+                            <div class="detail-value">${fish.bait}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">
+                                <i class="fas fa-calendar-alt"></i> Estações:
+                            </div>
+                            <div class="detail-value">
+                                ${getSeasonsText(fish.seasons)}
+                                <div class="season-icons">
+                                    ${fish.seasons.map(season => `<i class="fas fa-${getSeasonIcon(season)} season-icon ${season}"></i>`).join('')}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">
+                                <i class="fas fa-star"></i> Raridade:
+                            </div>
+                            <div class="detail-value">${getRarityText(fish.rarity)}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">
+                                <i class="fas fa-ruler"></i> Tamanho:
+                            </div>
+                            <div class="detail-value">${fish.size}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">
+                                <i class="fas fa-weight-hanging"></i> Peso:
+                            </div>
+                            <div class="detail-value">${fish.weight}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">
+                                <i class="fas fa-info-circle"></i> Descrição:
+                            </div>
+                            <div class="detail-value">${fish.description}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            modal.style.display = 'flex';
+        }
+
+        // Filtragem de peixes
+        function filterFish() {
+            const searchTerm = searchInput.value.toLowerCase();
+            
+            let filteredFish = fishData.filter(fish => {
+                const matchesSearch = fish.name.toLowerCase().includes(searchTerm) || 
+                                     fish.scientificName.toLowerCase().includes(searchTerm);
+                
+                const matchesType = activeFilters.type === 'all' || fish.type === activeFilters.type;
+                const matchesRarity = activeFilters.rarity === 'all' || fish.rarity === activeFilters.rarity;
+                
+                return matchesSearch && matchesType && matchesRarity;
+            });
+            
+            renderFishCards(filteredFish);
+        }
+
+        // Inicializar eventos
+        function initEvents() {
+            searchInput.addEventListener('input', filterFish);
+            
+            filterButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const filter = button.getAttribute('data-filter');
+                    
+                    if (filter === 'all') {
+                        activeFilters.type = 'all';
+                        activeFilters.rarity = 'all';
+                    } else if (['freshwater', 'saltwater'].includes(filter)) {
+                        activeFilters.type = filter;
+                    } else {
+                        activeFilters.rarity = filter;
+                    }
+                    
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    
+                    filterFish();
+                });
+            });
+            
+            closeModal.addEventListener('click', () => {
+                modal.style.display = 'none';
+            });
+            
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        }
+
+        // Inicializar aplicação
+        function init() {
+            initParticles();
+            renderFishCards(fishData);
+            initEvents();
+        }
+
+        // Iniciar quando o documento estiver carregado
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
